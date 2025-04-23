@@ -2,6 +2,7 @@ import 'package:chat_bot_app/utils/app_constanta.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/util_helper.dart';
+import 'chat_page.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -11,6 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
+  TextEditingController queryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +61,22 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 21,),
             TextField(
+              controller: queryController,
+              onSubmitted: (value){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage(query: value)));
+              },
+              onEditingComplete: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage(query: queryController.text)));
+              },
+              style: mTextStyle12(mColor: Colors.grey),
               minLines: 5,
               maxLines: 5,
               decoration: InputDecoration(
+                suffixIcon: InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage(query: queryController.text)));
+                  },
+                    child: Icon(Icons.send_rounded,color: Colors.grey,)),
                 fillColor: AppColors.secondaryBlack,
                 filled: true,
                 hintText: " Write Question!",
@@ -119,31 +134,41 @@ class _HomePageState extends State<HomePage> {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,crossAxisSpacing: 4),
                   itemBuilder: (_,index){
                   Map<String,dynamic> currItem = AppConstants.defaultQuestions[selectedIndex]['ques'][index];
-                    return Container(
-                      height: 50,
-                      width: 50,
-                      margin: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryBlack,
-                        borderRadius: BorderRadius.circular(21)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height:50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  color: currItem['color'],
-                                  borderRadius: BorderRadius.circular(51)
+                    return InkWell(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage(query: currItem['ques'])));
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        margin: EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryBlack,
+                          borderRadius: BorderRadius.circular(21)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: Container(
+                                      margin: EdgeInsets.symmetric(vertical: 11),
+                                    height:50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        color: currItem['color'],
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(child: Icon(currItem['icon'],color: Colors.white,size: 32,))),
                                 ),
-                                child: Center(child: Icon(currItem['icon'],color: Colors.white,size: 32,))),
-                            SizedBox(height: 11,),
-                            Text(currItem['ques'],style: mTextStyle16(mColor: Colors.white,mFontWeight: FontWeight.w900),)
-                          ],
+                              ),
+                              Expanded(child: Text(currItem['ques'],style: mTextStyle16(mColor: Colors.white,mFontWeight: FontWeight.w900),))
+                            ],
+                          ),
                         ),
                       ),
                     );
